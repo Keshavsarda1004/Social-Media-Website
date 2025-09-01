@@ -8,7 +8,7 @@ import { inngest, functions } from "./inngest/index.js"
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-connectDB();
+await connectDB();
 
 app.use(cors());
 app.use(express.json());
