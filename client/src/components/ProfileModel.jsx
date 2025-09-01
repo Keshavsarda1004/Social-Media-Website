@@ -1,0 +1,103 @@
+import { Pencil } from 'lucide-react';
+import React, { useState } from 'react'
+import { dummyUserData } from '../assets/assets'
+
+const ProfileModel = ({setShowEdit}) => {
+    const user = dummyUserData;
+    const [editForm, setEditForm] = useState({
+        bio: user.bio,
+        cover_photo: null,
+        profile_picture: null,
+        username: user.username,
+        location: user.location,
+        full_name: user.full_name
+    })
+
+    const handleSaveProfile = async(e) => {
+        e.preventDeafault();
+    }
+
+    return (
+        <div className='top-0 bottom-0 left-0 right-0 fixed z-110 h-screen overflow-y-scroll bg-black/50'>
+            <div className='max-w-2xl mx-auto sm:py-6'>
+                <div className='bg-white rounded-lg shadow p-6'>
+                    <h3 className='text-2xl font-bold text-gray-900 mb-6'>Edit Profile</h3>
+
+                    <form className='space-y-4' onSubmit={handleSaveProfile}>
+                        {/* Profile Picture */}
+                        <div className='flex flex-col items-start gap-3'>
+                            <label htmlFor="profile_picture" className='block text-sm font-medium text-gray-700 mb-1'>
+                                Profile Picture
+                                <input type="file" accept='image/*' id='profile_picture' hidden className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => setEditForm({...editForm, profile_picture : e.target.files[0]})}/>
+
+                                <div className='group/profile relative'>
+                                    <img src={editForm.profile_picture ? URL.createObjectURL(editForm.profile_picture) : user.profile_picture} alt=""  className='w-24 h-24 object-cover rounded-full mt-2'/>
+
+                                    <div className='absolute hidden group-hover/profile:flex top-0 left-0 bottom-0 right-0 bg-black/20 rounded-full items-center justify-center'>
+                                        <Pencil className='w-5 h-5 text-white'/>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        {/* Cover Photo */}
+                        <div className='flex flex-col items-start gap-3'>
+                            <label htmlFor="cover_photo" className='block text-sm font-medium text-gray-700 mb-1'>
+                                Cover Photo
+                                <input type="file" accept='image/*' id='cover_photo' hidden className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => setEditForm({...editForm, cover_photo : e.target.files[0]})}/>
+
+                                <div className='group/cover relative'>
+                                    <img src={editForm.cover_photo ? URL.createObjectURL(editForm.cover_photo) : user.cover_photo} alt=""  className='w-80 h-40 rounded-lg bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 mt-2 object-cover'/>
+
+                                    <div className='absolute hidden group-hover/cover:flex top-0 left-0 bottom-0 right-0 bg-black/20 rounded-lg items-center justify-center'>
+                                        <Pencil className='w-5 h-5 text-white'/>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        {/* Name Section */}
+                        <div>
+                            <label className='block text-sm font-medium text-gray-700 mb-1'>
+                                Name
+                                <input type="text" className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter your full name' onChange={(e) => setEditForm({...editForm, full_name: e.target.value})} value={editForm.full_name}/>
+                            </label>
+                        </div>
+
+                        {/* Username Section */}
+                        <div>
+                            <label className='block text-sm font-medium text-gray-700 mb-1'>
+                                Username
+                                <input type="text" className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter your username' onChange={(e) => setEditForm({...editForm, username: e.target.value})} value={editForm.username}/>
+                            </label>
+                        </div>
+
+                        {/* Bio Section */}
+                        <div>
+                            <label className='block text-sm font-medium text-gray-700 mb-1'>
+                                Bio
+                                <textarea rows={3} className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter a short bio' onChange={(e) => setEditForm({...editForm, bio: e.target.value})} value={editForm.bio}/>
+                            </label>
+                        </div>
+
+                        {/* Location Section */}
+                        <div>
+                            <label className='block text-sm font-medium text-gray-700 mb-1'>
+                                Location
+                                <input type="text" className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter your location' onChange={(e) => setEditForm({...editForm, location: e.target.value})} value={editForm.location}/>
+                            </label>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className='justify-end flex space-x-3 pt-6'>
+                            <button onClick={() => setShowEdit(false )} type='button' className='px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer'>Cancel</button>
+                            <button type='submit' className='px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:from-indigo-600 hover:to-purple-700 transition cursor-pointer'>Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default ProfileModel
