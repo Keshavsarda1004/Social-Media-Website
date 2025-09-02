@@ -39,7 +39,7 @@ const syncUserUpdation = inngest.createFunction(
     const {id, firt_name, last_name, email_addresses, image_url} = event.data;
 
     const updatedUserData = {
-        email: email_addresses[0],
+        email: email_addresses[0].email_address,
         profile_picture: image_url,
         full_name: firt_name + " " + last_name,
     }
