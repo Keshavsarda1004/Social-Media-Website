@@ -133,7 +133,7 @@ const deleteStory = inngest.createFunction(
     }
 );
 
-const sendNotificationOfUnseenMessages = imgset.createFunction(
+const sendNotificationOfUnseenMessages = inngest.createFunction(
     {id: "send-unseen-messages-notification"},
     {cron: "TZ=Asia/Kolkata 0 9 * * *"}, // Every Day 9 AM IST
     async({step}) => {
