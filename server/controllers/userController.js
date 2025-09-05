@@ -1,5 +1,7 @@
 import fs from 'fs';
 import User from "../models/User.js";
+import Post from '../models/Post.js';
+import { inngest } from '../inngest/index.js';
 import imagekit from '../configs/imageKit.js';
 import Connection from '../models/Connection.js';
 
@@ -94,7 +96,7 @@ export const updateUserData = async(req, res) => {
 export const dicoverUsers = async(req, res) => {
     try {
         const {userId} = req.auth();
-        const {input} = req.body();
+        const {input} = req.body;
 
         const allUsers = await User.find({
             $or: [
@@ -118,7 +120,7 @@ export const dicoverUsers = async(req, res) => {
 export const followUser = async(req, res) => {
     try {
         const {userId} = req.auth();
-        const {id} = req.body();
+        const {id} = req.body;
 
         const user = await User.findById(userId);
         user.following = user.following.filter(user => user !== id);
@@ -139,7 +141,7 @@ export const followUser = async(req, res) => {
 export const unFollowUser = async(req, res) => {
     try {
         const {userId} = req.auth();
-        const {id} = req.body();
+        const { id } = req.body;
 
         const user = await User.findById(userId);
 
@@ -165,7 +167,7 @@ export const unFollowUser = async(req, res) => {
 export const sendConnectionRequest = async(req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
 
         // Check if the user has sent more than 20 connection requests in the last 24 hours or not
         const last24Hours = new Date(Date.now() - (24 * 60 * 60 * 1000));
@@ -184,10 +186,16 @@ export const sendConnectionRequest = async(req, res) => {
         })
 
         if(!connection) {
-            await Connection.create({
+            const newConnection = await Connection.create({
                 to_user_id: id,
                 from_user_id: userId
             })
+
+            await inngest.send({
+                name: 'app/connection-request',
+                data: { connectionId: newConnection._id}
+            })
+
             return res.json({success: true, message: "Connection request sent successfully"});
         } else if(connection && connection.status === 'accepted') {
             return res.json({success: false, message: "You are already connected with this user"});
@@ -224,7 +232,7 @@ export const getUserConnections = async(req, res) => {
 export const acceptConnectionRequest = async(req, res) => {
     try {
         const { userId } = req.auth();
-        const { id } = req.body();
+        const { id } = req.body;
 
         const connection = await Connection.findOne({from_user_id: userId, to_user_id: id});
 
@@ -244,6 +252,24 @@ export const acceptConnectionRequest = async(req, res) => {
         await connection.save();
 
         res.json({success: true, message: "Connection accepted successfully"});
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, message: error.message})
+    }
+}
+
+// Get User Profiles
+export const getUserProfiles = async(req, res) => {
+    try {
+        const { profileId } = req.body;
+        const profile = await User.findById(profileId);
+
+        if(!profile) {
+            return res.json({success: false, message: "Profile not found"});
+        }
+
+        const posts = await Post.find({user: profileId}).populate('user');
+        res.json({success: true, profile, posts});
     } catch (error) {
         console.log(error);
         res.json({success: false, message: error.message})
